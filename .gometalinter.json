@@ -1,0 +1,14 @@
+{
+  "Deadline": "2m",
+  "Enable": [
+    "gofmt",
+    "goimports",
+    "gosimple",
+    "ineffassign",
+    "interfacer",
+    "nakedret",
+    "unconvert",
+    "unused"
+  ],
+  "Sort": ["path", "line", "linter", "severity"]
+}
