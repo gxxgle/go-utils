@@ -3,7 +3,7 @@ package json
 import (
 	"fmt"
 
-	"github.com/JSON-iterator/go"
+	"github.com/json-iterator/go"
 )
 
 // global variable
