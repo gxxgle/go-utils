@@ -14,12 +14,26 @@ func do() {
 }
 
 func main() {
-	err := schedule.AddFunc("@every 1s", do)
+	// cron()
+	loop()
+}
+
+func cron() {
+	err := schedule.AddCronFunc("@every 1s", do)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	time.Sleep(time.Second * 5)
+	log.Println("stop begin")
 	schedule.Close()
-	log.Println("stopped")
+	log.Println("stop finish")
+}
+
+func loop() {
+	schedule.AddLoopFunc(time.Second, do)
+	time.Sleep(time.Second * 5)
+	log.Println("stop begin")
+	schedule.Close()
+	log.Println("stop finish")
 }
