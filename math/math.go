@@ -43,15 +43,15 @@ func NewFromFloat(v float64) decimal.Decimal {
 }
 
 // FloatToInt (15.6666, 4) -> 156666
-func FloatToInt(f float64, precision int) int {
-	dMulti := decimal.NewFromFloat(math.Pow10(precision))
+func FloatToInt(f float64, precision int32) int {
+	dMulti := decimal.NewFromFloat(math.Pow10(int(precision)))
 	dF := decimal.NewFromFloat(f)
 	return int(dF.Mul(dMulti).Round(0).IntPart())
 }
 
 // FloatFromInt (156666, 4) -> 15.6666
-func FloatFromInt(i int, precision int) float64 {
-	dMulti := decimal.NewFromFloat(math.Pow10(precision))
+func FloatFromInt(i int, precision int32) float64 {
+	dMulti := decimal.NewFromFloat(math.Pow10(int(precision)))
 	dI := decimal.NewFromFloat(float64(i))
 	out, _ := dI.Div(dMulti).Round(int32(precision)).Float64()
 	return out
