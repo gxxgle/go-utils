@@ -1,8 +1,6 @@
 package json
 
 import (
-	"fmt"
-
 	"github.com/json-iterator/go"
 )
 
@@ -39,11 +37,7 @@ func MarshalToString(v interface{}) (string, error) {
 
 // MustMarshalToString must returns the JSON encoding to string of v.
 func MustMarshalToString(v interface{}) string {
-	str, err := JSON.MarshalToString(v)
-	if err != nil || str == "" {
-		return fmt.Sprint(v)
-	}
-
+	str, _ := JSON.MarshalToString(v)
 	return str
 }
 
