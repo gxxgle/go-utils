@@ -39,7 +39,7 @@ func Ceil(v float64, precision int32) float64 {
 
 // NewFromFloat max 12 digits decimal
 func NewFromFloat(v float64) decimal.Decimal {
-	return decimal.NewFromFloatWithExponent(v, -12)
+	return decimal.NewFromFloatWithExponent(v, -12).Round(10)
 }
 
 // FloatToInt (15.6666, 4) -> 156666
