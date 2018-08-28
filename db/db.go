@@ -44,6 +44,7 @@ func OpenDB(cfg *Config) (*xorm.Engine, error) {
 	db.ShowSQL(cfg.Debug)
 	db.SetMaxOpenConns(cfg.PoolSize)
 	db.SetMaxIdleConns(cfg.PoolSize)
+	db.SetConnMaxLifetime(time.Minute * 30)
 
 	if err := db.Ping(); err != nil {
 		return nil, err
