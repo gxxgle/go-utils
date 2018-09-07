@@ -10,7 +10,7 @@ func TestFloatToInt(t *testing.T) {
 		15.666599998,
 	}
 
-	precisions := []int{
+	precisions := []int32{
 		4,
 		4,
 	}
@@ -34,7 +34,7 @@ func TestFloatFromInt(t *testing.T) {
 		156666,
 	}
 
-	precisions := []int{
+	precisions := []int32{
 		4,
 		4,
 	}
