@@ -14,7 +14,6 @@ func Log(args ...float64) float64 {
 	)
 
 	if len(args) <= 0 {
-		println(181818)
 		return 0
 	}
 
@@ -27,7 +26,6 @@ func Log(args ...float64) float64 {
 	}
 
 	if base < 0 || base == 1 {
-		println(313131)
 		return 0
 	}
 
@@ -40,7 +38,6 @@ func Log(args ...float64) float64 {
 	}
 
 	if step <= 0 {
-		println(444444)
 		return 0
 	}
 
