@@ -1,6 +1,7 @@
 package consul
 
 import (
+	"errors"
 	"os"
 
 	"github.com/gxxgle/go-utils/json"
@@ -39,6 +40,10 @@ func KVGet(key string, value interface{}) error {
 	pair, _, err := Client.KV().Get(key, nil)
 	if err != nil {
 		return err
+	}
+
+	if pair == nil || len(pair.Value) <= 0 {
+		return errors.New("consul get failed")
 	}
 
 	return json.Unmarshal(pair.Value, value)
