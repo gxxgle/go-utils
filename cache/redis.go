@@ -66,6 +66,11 @@ func (c *RedisCacher) Get(key string, value interface{}) error {
 	return json.Unmarshal(bs, value)
 }
 
+// Delete cache by key
+func (c *RedisCacher) Delete(key ...string) error {
+	return c.Client.Del(key...).Err()
+}
+
 // HSet value to json
 func (c *RedisCacher) HSet(key, field string, value interface{}) error {
 	str, err := json.MarshalToString(value)

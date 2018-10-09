@@ -49,5 +49,14 @@ func (c *MemoryCacher) Get(key string, value interface{}) error {
 	return json.Unmarshal(bs, value)
 }
 
+// Delete cache by key
+func (c *MemoryCacher) Delete(key ...string) error {
+	for _, k := range key {
+		c.Client.Delete(k)
+	}
+
+	return nil
+}
+
 func (c *MemoryCacher) Close() {
 }
