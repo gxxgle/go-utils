@@ -1,9 +1,9 @@
 package consul
 
 import (
-	"errors"
 	"os"
 
+	"github.com/go-redis/redis"
 	"github.com/gxxgle/go-utils/json"
 	"github.com/gxxgle/go-utils/log"
 	"github.com/hashicorp/consul/api"
@@ -43,7 +43,7 @@ func KVGet(key string, value interface{}) error {
 	}
 
 	if pair == nil || len(pair.Value) <= 0 {
-		return errors.New("consul get failed")
+		return redis.Nil
 	}
 
 	return json.Unmarshal(pair.Value, value)
