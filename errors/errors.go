@@ -105,7 +105,13 @@ func IsContextCanceled(err error) bool {
 	return strings.Contains(err.Error(), context.Canceled.Error())
 }
 
+// IsContextDeadlineExceeded return is context deadline exceeded error
+func IsContextDeadlineExceeded(err error) bool {
+	return strings.Contains(err.Error(), context.DeadlineExceeded.Error())
+}
+
 // CanStreamIgnoreError return is can stream ignore error
 func CanStreamIgnoreError(err error) bool {
-	return IsConnClosing(err) || IsContextCanceled(err)
+	return IsConnClosing(err) || IsContextCanceled(err) ||
+		IsContextDeadlineExceeded(err)
 }
