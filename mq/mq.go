@@ -2,8 +2,8 @@ package mq
 
 // Client is a message queue client.
 type Client interface {
-	NewPublisher(string) Publisher
-	NewSubscriber(string) Subscriber
+	NewPublisher(string) (Publisher, error)
+	NewSubscriber(string) (Subscriber, error)
 	Purge(string) error
 	Close()
 }

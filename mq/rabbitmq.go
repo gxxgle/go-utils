@@ -65,12 +65,12 @@ func newRabbitmqSubscriber(cli *rabbitmq, queue string) *rabbitmqSubscriber {
 	return out
 }
 
-func (c *rabbitmq) NewPublisher(exchange string) Publisher {
-	return newRabbitmqPublisher(c, exchange)
+func (c *rabbitmq) NewPublisher(exchange string) (Publisher, error) {
+	return newRabbitmqPublisher(c, exchange), nil
 }
 
-func (c *rabbitmq) NewSubscriber(queue string) Subscriber {
-	return newRabbitmqSubscriber(c, queue)
+func (c *rabbitmq) NewSubscriber(queue string) (Subscriber, error) {
+	return newRabbitmqSubscriber(c, queue), nil
 }
 
 func (c *rabbitmq) Purge(queue string) error {
