@@ -41,50 +41,12 @@ func NewRabbitMQ(url string) Client {
 	return out
 }
 
-func newRabbitmqPublisher(cli *rabbitmq, exchange string) *rabbitmqPublisher {
-	out := &rabbitmqPublisher{
-		cli:      cli,
-		puber:    cony.NewPublisher(exchange, ""),
-		exchange: exchange,
-		msgs:     make(chan *Message, 0),
-	}
-
-	out.run()
-	out.cli.Publish(out.puber)
-	return out
+func (c *rabbitmq) Publish(exchange string, key string, body []byte) error {
+	return newRabbitmqPublisher(c, exchange).Publish(key, body)
 }
 
-func newRabbitmqSubscriber(cli *rabbitmq, queue string) *rabbitmqSubscriber {
-	out := &rabbitmqSubscriber{
-		cli:   cli,
-		coner: cony.NewConsumer(&cony.Queue{Name: queue}),
-		queue: queue,
-	}
-
-	out.cli.Consume(out.coner)
-	return out
-}
-
-func (c *rabbitmq) NewPublisher(exchange string) (Publisher, error) {
-	return newRabbitmqPublisher(c, exchange), nil
-}
-
-func (c *rabbitmq) NewSubscriber(queue string) (Subscriber, error) {
-	return newRabbitmqSubscriber(c, queue), nil
-}
-
-func (c *rabbitmq) Purge(queue string) error {
-	purge := func(der cony.Declarer) error {
-		ch, ok := der.(*amqp.Channel)
-		if !ok || ch == nil {
-			return nil
-		}
-
-		_, err := ch.QueuePurge(queue, true)
-		return err
-	}
-
-	c.Declare([]cony.Declaration{purge})
+func (c *rabbitmq) Subscribe(queue string, handler func([]byte) error) error {
+	newRabbitmqSubscriber(c, queue).Subscribe(handler)
 	return nil
 }
 
@@ -112,6 +74,19 @@ func (c *rabbitmq) run() {
 
 		c.wg.Done()
 	}()
+}
+
+func newRabbitmqPublisher(cli *rabbitmq, exchange string) *rabbitmqPublisher {
+	out := &rabbitmqPublisher{
+		cli:      cli,
+		puber:    cony.NewPublisher(exchange, ""),
+		exchange: exchange,
+		msgs:     make(chan *Message, 0),
+	}
+
+	out.run()
+	out.cli.Client.Publish(out.puber)
+	return out
 }
 
 func (p *rabbitmqPublisher) send(msg *Message) {
@@ -148,6 +123,17 @@ func (p *rabbitmqPublisher) Publish(key string, body []byte) error {
 
 	p.msgs <- &Message{Key: key, Body: body}
 	return nil
+}
+
+func newRabbitmqSubscriber(cli *rabbitmq, queue string) *rabbitmqSubscriber {
+	out := &rabbitmqSubscriber{
+		cli:   cli,
+		coner: cony.NewConsumer(&cony.Queue{Name: queue}),
+		queue: queue,
+	}
+
+	out.cli.Consume(out.coner)
+	return out
 }
 
 func (s *rabbitmqSubscriber) Subscribe(handler func([]byte) error) {

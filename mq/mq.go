@@ -2,20 +2,9 @@ package mq
 
 // Client is a message queue client.
 type Client interface {
-	NewPublisher(string) (Publisher, error)
-	NewSubscriber(string) (Subscriber, error)
-	Purge(string) error
+	Publish(exchange string, key string, body []byte) error
+	Subscribe(queue string, handler func([]byte) error) error
 	Close()
-}
-
-// Publisher can send message.
-type Publisher interface {
-	Publish(string, []byte) error
-}
-
-// Subscriber can receive message.
-type Subscriber interface {
-	Subscribe(func([]byte) error)
 }
 
 type Message struct {
