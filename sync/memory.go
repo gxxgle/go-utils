@@ -29,3 +29,6 @@ func (m *memoryMutexer) NewMutex(key string) Mutex {
 	m.Store(key, mu)
 	return mu
 }
+
+func (*memoryMutexer) Close() {
+}

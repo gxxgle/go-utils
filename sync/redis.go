@@ -58,6 +58,10 @@ func (m *redisMutexer) NewMutex(key string) Mutex {
 	}
 }
 
+func (m *redisMutexer) Close() {
+	m.cacher.Close()
+}
+
 func (m *redisMutex) Lock() {
 	for {
 		_, err := m.Locker.Lock()
