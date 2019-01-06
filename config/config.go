@@ -17,5 +17,6 @@ var (
 func Init(path string) error {
 	return config.Load(consul.NewSource(
 		consul.WithPrefix(path),
+		consul.StripPrefix(true),
 	))
 }
