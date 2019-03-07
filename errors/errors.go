@@ -9,7 +9,6 @@ import (
 	"github.com/gxxgle/go-utils/json"
 	"github.com/gxxgle/go-utils/log"
 	"github.com/micro/go-micro/errors"
-	"github.com/micro/grpc-go/transport"
 )
 
 var (
@@ -97,7 +96,7 @@ func Internal(format string, a ...interface{}) error {
 
 // IsConnClosing return is grpc conn closing error
 func IsConnClosing(err error) bool {
-	return strings.Contains(err.Error(), transport.ErrConnClosing.Desc)
+	return strings.Contains(err.Error(), "transport is closing")
 }
 
 // IsContextCanceled return is context canceled error
