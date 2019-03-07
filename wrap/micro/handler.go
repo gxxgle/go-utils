@@ -43,7 +43,7 @@ func HandlerWrap(config map[string]HandlerWrapConfig) server.HandlerWrapper {
 			}
 
 			if cf.IsLogRequest {
-				kv = append(kv, "req", json.MustMarshalToString(req.Request()))
+				kv = append(kv, "req", json.MustMarshalToString(req.Body()))
 			}
 
 			if cf.IsLogResponse {
