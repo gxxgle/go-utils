@@ -12,6 +12,7 @@ import (
 type RedisConfig struct {
 	URL      string `json:"url"`
 	Password string `json:"password"`
+	DB       int    `json:"db"`
 	Retries  int    `json:"retries"`
 }
 
@@ -33,7 +34,7 @@ func NewRedisCacher(cfg *RedisConfig) (Cacher, error) {
 	cli := redis.NewClient(&redis.Options{
 		Addr:        cfg.URL,
 		Password:    cfg.Password,
-		DB:          0,
+		DB:          cfg.DB,
 		DialTimeout: time.Second * 5,
 	})
 
