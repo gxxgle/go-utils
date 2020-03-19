@@ -34,7 +34,7 @@ func New() (*Schedule, error) {
 		return nil, err
 	}
 
-	c := cron.NewWithLocation(loc)
+	c := cron.New(cron.WithLocation(loc))
 	s := &Schedule{
 		Cron:    c,
 		Stopped: false,
@@ -62,12 +62,14 @@ func Close() {
 
 // AddCronFunc [docs](https://godoc.org/github.com/robfig/cron)
 func (s *Schedule) AddCronFunc(spec string, fn func()) error {
-	return s.Cron.AddFunc(spec, func() {
+	_, err := s.Cron.AddFunc(spec, func() {
 		s.Wg.Add(1)
 		defer s.Wg.Done()
 
 		fn()
 	})
+
+	return err
 }
 
 // AddLoopFunc can loop run task.
