@@ -3,8 +3,8 @@ package config
 import (
 	"time"
 
-	"github.com/micro/go-config"
-	"github.com/micro/go-config/source/consul"
+	"github.com/micro/go-micro/config"
+	"github.com/micro/go-plugins/config/source/consul"
 )
 
 // default service configs

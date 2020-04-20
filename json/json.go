@@ -1,13 +1,18 @@
 package json
 
 import (
+	stdjson "encoding/json"
+
 	"github.com/json-iterator/go"
+	"github.com/tidwall/gjson"
 )
 
 // global variable
 var (
 	JSON = jsoniter.ConfigCompatibleWithStandardLibrary
 )
+
+type RawMessage = stdjson.RawMessage
 
 // UseNumber solve very big int64 digits loss.
 func UseNumber() {
@@ -63,11 +68,21 @@ func ValidFromString(str string) bool {
 }
 
 // Get get value from JSON data by path.
-func Get(data []byte, path ...interface{}) jsoniter.Any {
-	return JSON.Get(data, path...)
+// https://pkg.go.dev/github.com/tidwall/gjson?tab=doc#Get
+func Get(data []byte, path ...string) gjson.Result {
+	if len(path) == 0 {
+		return gjson.ParseBytes(data)
+	}
+
+	return gjson.GetBytes(data, path[0])
 }
 
 // GetFromString get value from JSON string by path.
-func GetFromString(str string, path ...interface{}) jsoniter.Any {
-	return Get([]byte(str), path...)
+// https://pkg.go.dev/github.com/tidwall/gjson?tab=doc#Get
+func GetFromString(str string, path ...string) gjson.Result {
+	if len(path) == 0 {
+		return gjson.Parse(str)
+	}
+
+	return gjson.Get(str, path[0])
 }
