@@ -15,7 +15,7 @@ var (
 
 func init() {
 	sync.InitRedis(&cache.RedisConfig{
-		URL:      "172.18.130.38:16379",
+		URL:      "devhost:6379",
 		Password: "KgqvdOdYV5",
 		Retries:  10,
 	})

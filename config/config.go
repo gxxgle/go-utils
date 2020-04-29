@@ -1,22 +1,39 @@
 package config
 
 import (
-	"time"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 
-	"github.com/micro/go-micro/config"
-	"github.com/micro/go-plugins/config/source/consul"
+	"github.com/gxxgle/go-utils/json"
+	"github.com/gxxgle/go-utils/path"
 )
 
-// default service configs
-var (
-	DefaultVersion          = "latest"
-	DefaultRegisterTTL      = time.Second * 10
-	DefaultRegisterInterval = time.Second * 5
-)
+// Init config form json file
+func Init(config interface{}, paths ...string) error {
+	var file string
 
-func Init(path string) error {
-	return config.Load(consul.NewSource(
-		consul.WithPrefix(path),
-		consul.StripPrefix(true),
-	))
+	if len(paths) > 0 {
+		file = paths[0]
+	}
+
+	if len(file) == 0 {
+		dir, _ := filepath.Abs(path.CurrentDir())
+		bin := path.CurrentFilename()
+		file = fmt.Sprintf("%s/%s.json", dir, bin)
+	}
+
+	fh, err := os.Open(file)
+	if err != nil {
+		return err
+	}
+
+	defer fh.Close()
+	bs, err := ioutil.ReadAll(fh)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(bs, config)
 }

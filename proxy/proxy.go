@@ -36,7 +36,7 @@ func initSocks5() {
 
 	dialer, err := proxy.SOCKS5("tcp", url.Host, auth, proxy.Direct)
 	if err != nil {
-		log.Fatalf("socks5 proxy err: %v\n", err)
+		log.Fatalf("go-utils socks5 proxy err: %v\n", err)
 	}
 
 	Client.Transport = &http.Transport{Dial: dialer.Dial}

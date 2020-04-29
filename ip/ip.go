@@ -2,24 +2,19 @@ package ip
 
 import (
 	"bytes"
-	"io/ioutil"
 	"net"
-	"net/http"
+
+	"github.com/imroc/req"
 )
 
 // ExtranetIP return external IP address.
 func ExtranetIP() (string, error) {
-	resp, err := http.Get("http://pv.sohu.com/cityjson?ie=utf-8")
+	resp, err := req.Get("http://pv.sohu.com/cityjson?ie=utf-8")
 	if err != nil {
 		return "", err
 	}
 
-	defer resp.Body.Close()
-	bs, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
+	bs := resp.Bytes()
 	idx := bytes.Index(bs, []byte(`"cip": "`))
 	bs = bs[idx+len(`"cip": "`):]
 	idx = bytes.Index(bs, []byte(`"`))

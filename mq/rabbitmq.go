@@ -65,7 +65,7 @@ func (c *rabbitmq) run() {
 			select {
 			case err := <-c.Errors():
 				if err != nil {
-					log.Errorw("mq rabbitmq client error", "err", err)
+					log.Errorw("go-utils mq rabbitmq client error", "err", err)
 				}
 
 			case <-c.exit:
@@ -92,7 +92,7 @@ func newRabbitmqPublisher(cli *rabbitmq, exchange string) *rabbitmqPublisher {
 func (p *rabbitmqPublisher) send(msg *Message) {
 	err := p.puber.PublishWithRoutingKey(amqp.Publishing{Body: msg.Body}, msg.Key)
 	if err != nil {
-		log.Errorw("mq rabbitmq publisher send message error", "exchange",
+		log.Errorw("go-utils mq rabbitmq publisher send message error", "exchange",
 			p.exchange, "key", msg.Key, "body", string(msg.Body))
 	}
 }
@@ -112,7 +112,7 @@ func (p *rabbitmqPublisher) run() {
 
 		close(p.msgs)
 		p.cli.wg.Done()
-		log.Infow("mq rabbitmq publisher stopped", "exchange", p.exchange)
+		log.Infow("go-utils mq rabbitmq publisher stopped", "exchange", p.exchange)
 	}()
 }
 
@@ -144,7 +144,7 @@ func (s *rabbitmqSubscriber) Subscribe(handler func([]byte) error) {
 			select {
 			case msg := <-s.coner.Deliveries():
 				if err := handler(msg.Body); err != nil {
-					log.Errorw("mq rabbitmq subscriber handler message error",
+					log.Errorw("go-utils mq rabbitmq subscriber handler message error",
 						"queue", s.queue, "body", string(msg.Body), "err", err)
 					continue
 				}
@@ -152,7 +152,7 @@ func (s *rabbitmqSubscriber) Subscribe(handler func([]byte) error) {
 
 			case err := <-s.coner.Errors():
 				if err != nil {
-					log.Errorw("mq rabbitmq subscriber error", "queue", s.queue, "err", err)
+					log.Errorw("go-utils mq rabbitmq subscriber error", "queue", s.queue, "err", err)
 				}
 
 			case <-s.cli.exit:
@@ -160,6 +160,6 @@ func (s *rabbitmqSubscriber) Subscribe(handler func([]byte) error) {
 		}
 
 		s.cli.wg.Done()
-		log.Infow("mq rabbitmq subscriber stopped", "queue", s.queue)
+		log.Infow("go-utils mq rabbitmq subscriber stopped", "queue", s.queue)
 	}()
 }

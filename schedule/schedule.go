@@ -5,7 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/robfig/cron"
+	"github.com/gxxgle/go-utils/env"
+	"github.com/robfig/cron/v3"
 )
 
 type Schedule struct {
@@ -28,13 +29,7 @@ func init() {
 
 // New new cron
 func New() (*Schedule, error) {
-	loc, err := time.LoadLocation("Asia/Shanghai")
-	if err != nil {
-		log.Fatalln(err)
-		return nil, err
-	}
-
-	c := cron.New(cron.WithLocation(loc))
+	c := cron.New(cron.WithLocation(env.Local))
 	s := &Schedule{
 		Cron:    c,
 		Stopped: false,
@@ -45,7 +40,7 @@ func New() (*Schedule, error) {
 	return s, nil
 }
 
-// AddCronFunc [docs](https://godoc.org/github.com/robfig/cron)
+// AddCronFunc [docs](https://pkg.go.dev/github.com/robfig/cron?tab=doc)
 func AddCronFunc(spec string, fn func()) error {
 	return schedule.AddCronFunc(spec, fn)
 }
@@ -60,7 +55,7 @@ func Close() {
 	schedule.Close()
 }
 
-// AddCronFunc [docs](https://godoc.org/github.com/robfig/cron)
+// AddCronFunc [docs](https://pkg.go.dev/github.com/robfig/cron?tab=doc)
 func (s *Schedule) AddCronFunc(spec string, fn func()) error {
 	_, err := s.Cron.AddFunc(spec, func() {
 		s.Wg.Add(1)

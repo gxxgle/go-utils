@@ -1,25 +1,25 @@
 package sync
 
 import (
-	"time"
-
-	"github.com/bsm/redis-lock"
+	"github.com/bsm/redislock"
 	"github.com/gxxgle/go-utils/cache"
 	"github.com/gxxgle/go-utils/log"
 )
 
 type redisMutexer struct {
-	cacher *cache.RedisCacher
-	option *lock.Options
+	options *Options
+	cacher  *cache.RedisCacher
+	locker  *redislock.Client
 }
 
 type redisMutex struct {
-	*lock.Locker
-	key string
+	key     string
+	mutexer *redisMutexer
+	lock    *redislock.Lock
 }
 
-func InitRedis(cfg *cache.RedisConfig, opt ...*lock.Options) error {
-	mu, err := NewRedisMutexer(cfg, opt...)
+func InitRedis(cfg *cache.RedisConfig, opts ...Option) error {
+	mu, err := NewRedisMutexer(cfg, opts...)
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func InitRedis(cfg *cache.RedisConfig, opt ...*lock.Options) error {
 	return nil
 }
 
-func NewRedisMutexer(cfg *cache.RedisConfig, opt ...*lock.Options) (Mutexer, error) {
+func NewRedisMutexer(cfg *cache.RedisConfig, opts ...Option) (Mutexer, error) {
 	cfg.Retries = 0
 	cacher, err := cache.NewRedisCacher(cfg)
 	if err != nil {
@@ -36,25 +36,18 @@ func NewRedisMutexer(cfg *cache.RedisConfig, opt ...*lock.Options) (Mutexer, err
 	}
 
 	out := &redisMutexer{
-		cacher: cacher.(*cache.RedisCacher),
-		option: &lock.Options{
-			LockTimeout: time.Second * 60,
-			RetryDelay:  time.Millisecond * 20,
-		},
+		options: newOptions(opts...),
+		cacher:  cacher.(*cache.RedisCacher),
+		locker:  redislock.New(cacher.(*cache.RedisCacher)),
 	}
 
-	if len(opt) > 0 {
-		out.option = opt[0]
-	}
-
-	out.option.RetryCount = int(out.option.LockTimeout/out.option.RetryDelay) + 1
 	return out, nil
 }
 
 func (m *redisMutexer) NewMutex(key string) Mutex {
 	return &redisMutex{
-		Locker: lock.New(m.cacher, key, m.option),
-		key:    key,
+		key:     key,
+		mutexer: m,
 	}
 }
 
@@ -63,18 +56,23 @@ func (m *redisMutexer) Close() {
 }
 
 func (m *redisMutex) Lock() {
+	var (
+		err error
+		opt = m.mutexer.options
+	)
+
 	for {
-		_, err := m.Locker.Lock()
+		m.lock, err = m.mutexer.locker.Obtain(m.key, opt.ttl, &redislock.Options{RetryStrategy: opt.rlRetry})
 		if err == nil {
 			return
 		}
 
-		log.Errorw("redis sync lock error", "key", m.key, "err", err)
+		log.Errorw("go-utils redislock lock error", "key", m.key, "err", err)
 	}
 }
 
 func (m *redisMutex) Unlock() {
-	if err := m.Locker.Unlock(); err != nil {
-		log.Errorw("redis sync unlock error", "key", m.key, "err", err)
+	if err := m.lock.Release(); err != nil {
+		log.Errorw("go-utils redislock unlock error", "key", m.key, "err", err)
 	}
 }

@@ -5,8 +5,8 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gxxgle/go-utils/env"
 	"github.com/gxxgle/go-utils/log"
-	_ "github.com/lib/pq"
 	"xorm.io/xorm"
 )
 
@@ -14,10 +14,10 @@ import (
 var (
 	DefaultRetries    = 5
 	DefaullRetrySleep = time.Second
-	DefaultIsRetry    = isDeadlock
+	DefaultNeedRetry  = isDeadlock
 )
 
-// Config is config struct of db.
+// Config for db
 type Config struct {
 	Driver   string `json:"driver"`
 	URL      string `json:"url"`
@@ -35,12 +35,7 @@ func OpenDB(cfg *Config) (*xorm.Engine, error) {
 		return nil, err
 	}
 
-	loc, err := time.LoadLocation("Asia/Shanghai")
-	if err != nil {
-		return nil, err
-	}
-
-	db.DatabaseTZ = loc
+	db.DatabaseTZ = env.Local
 	db.ShowSQL(cfg.Debug)
 	db.SetMaxOpenConns(cfg.PoolSize)
 	db.SetMaxIdleConns(cfg.PoolSize)
@@ -53,7 +48,9 @@ func OpenDB(cfg *Config) (*xorm.Engine, error) {
 	return db, err
 }
 
-// Transaction and fn return db error and export error
+// Transaction for db
+// fn return [db error] and [export error]
+// if [export error] is not nil transaction will rollback
 func Transaction(s *xorm.Session, fn func(*xorm.Session) (error, error)) (dbErr, retErr error) {
 	dbErr = s.Begin()
 	if dbErr != nil {
@@ -65,7 +62,7 @@ func Transaction(s *xorm.Session, fn func(*xorm.Session) (error, error)) (dbErr,
 	dbErr, retErr = fn(s)
 	if retErr != nil {
 		if err := s.Rollback(); err != nil {
-			log.Errorw("db transaction rollback error", "err", err)
+			log.Errorw("go-utils db transaction rollback error", "err", err)
 		}
 
 		return
@@ -77,9 +74,9 @@ func Transaction(s *xorm.Session, fn func(*xorm.Session) (error, error)) (dbErr,
 
 // TransactionWithRetry fn return db error and export error
 func TransactionWithRetry(s *xorm.Session, fn func(*xorm.Session) (error, error),
-	isRetry func(error) bool) (dbErr, retErr error) {
-	if isRetry == nil {
-		isRetry = DefaultIsRetry
+	needRetry func(error) bool) (dbErr, retErr error) {
+	if needRetry == nil {
+		needRetry = DefaultNeedRetry
 	}
 
 	for i := 0; i < DefaultRetries; i++ {
@@ -88,7 +85,7 @@ func TransactionWithRetry(s *xorm.Session, fn func(*xorm.Session) (error, error)
 			break
 		}
 
-		if !isRetry(dbErr) {
+		if !needRetry(dbErr) {
 			break
 		}
 
