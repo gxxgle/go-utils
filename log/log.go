@@ -16,7 +16,8 @@ type (
 )
 
 var (
-	L = logrus.WithField("@pid", os.Getpid())
+	logfile *os.File
+	L       = logrus.WithField("@pid", os.Getpid())
 )
 
 func init() {
@@ -39,33 +40,41 @@ func init() {
 	})
 }
 
-func File(logfiles ...string) {
-	logfile := ""
-	if len(logfiles) > 0 {
-		logfile = logfiles[0]
+func File(logpaths ...string) {
+	logpath := ""
+	if len(logpaths) > 0 {
+		logpath = logpaths[0]
 	}
 
-	if len(logfile) == 0 {
+	if len(logpath) == 0 {
 		dir := path.TopLevelDir(path.CurrentDir())
 		filename := path.CurrentFilename()
-		logfile = fmt.Sprintf("%s/log/%s.log", dir, filename)
+		logpath = fmt.Sprintf("%s/log/%s.log", dir, filename)
 	}
 
-	if err := os.MkdirAll(filepath.Dir(logfile), os.ModePerm); err != nil {
-		L.WithField("path", logfile).WithError(err).Error("go-utils log mkdir failed")
-		return
-	}
-
-	file, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	err := os.MkdirAll(filepath.Dir(logpath), os.ModePerm)
 	if err != nil {
-		L.WithField("path", logfile).WithError(err).Error("go-utils log open file failed")
+		L.WithField("path", logpath).WithError(err).Error("go-utils log mkdir failed")
 		return
 	}
 
-	logrus.SetOutput(file)
+	logfile, err = os.OpenFile(logpath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		L.WithField("path", logpath).WithError(err).Error("go-utils log open file failed")
+		return
+	}
+
+	logrus.SetOutput(logfile)
 }
 
 func Debug() {
 	logrus.SetReportCaller(true)
 	logrus.SetLevel(logrus.DebugLevel)
+}
+
+func Close() {
+	if logfile != nil {
+		logfile.Close()
+		logfile = nil
+	}
 }

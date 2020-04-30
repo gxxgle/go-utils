@@ -2,10 +2,12 @@ package iriser
 
 import (
 	"reflect"
-	"strings"
+	"time"
 
+	"github.com/gxxgle/go-utils/log"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/core/router"
+	"github.com/kataras/iris/v12/middleware/logger"
 )
 
 func Register(r router.Party, h interface{}) {
@@ -20,7 +22,7 @@ func Register(r router.Party, h interface{}) {
 			continue
 		}
 
-		if !strings.Contains(mValue.Type().In(0).String(), ".Context") {
+		if mValue.Type().In(0).String() != "context.Context" {
 			continue
 		}
 
@@ -29,4 +31,15 @@ func Register(r router.Party, h interface{}) {
 			mValue.Call([]reflect.Value{reflect.ValueOf(ctx)})
 		})
 	}
+}
+
+func NewLogger() iris.Handler {
+	cfg := logger.DefaultConfig()
+	cfg.LogFuncCtx = func(ctx iris.Context, latency time.Duration) {
+		log.L.WithFields(log.F{
+			"latency_ms": latency.Milliseconds(),
+			"path":       ctx.Path(),
+		}).Info("api request")
+	}
+	return logger.New(cfg)
 }
