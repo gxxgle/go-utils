@@ -29,13 +29,24 @@ func init() {
 			logrus.FieldKeyFile:  "@file",
 			logrus.FieldKeyMsg:   "msg",
 		},
-		CallerPrettyfier: func(rf *runtime.Frame) (function string, file string) {
-			file = fmt.Sprintf(":L%d", rf.Line)
+		CallerPrettyfier: func(rf *runtime.Frame) (string, string) {
+			file := fmt.Sprintf(":L%d", rf.Line)
 			files := strings.Split(rf.File, "/")
 			if len(files) > 0 {
 				file = files[len(files)-1] + file
 			}
-			return rf.Function, file
+			if len(files) > 1 {
+				file = files[len(files)-2] + "/" + file
+			}
+			function := ""
+			functions := strings.Split(rf.Function, "/")
+			if len(functions) > 0 {
+				function = functions[len(functions)-1] + function
+			}
+			if len(functions) > 1 {
+				function = functions[len(functions)-2] + "/" + function
+			}
+			return function, file
 		},
 	})
 }

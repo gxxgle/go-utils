@@ -30,6 +30,8 @@ func Register(r router.Party, h interface{}) {
 		r.Post("/"+mType.Name, func(ctx iris.Context) {
 			mValue.Call([]reflect.Value{reflect.ValueOf(ctx)})
 		})
+
+		log.L.WithField("method", mType.Name).Debug("register handler")
 	}
 }
 
