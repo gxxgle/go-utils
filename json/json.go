@@ -70,7 +70,7 @@ func ValidFromString(str string) bool {
 // Get get value from JSON data by path.
 // https://pkg.go.dev/github.com/tidwall/gjson?tab=doc#Get
 func Get(data []byte, path ...string) gjson.Result {
-	if len(path) == 0 {
+	if len(path) == 0 || len(path[0]) == 0 {
 		return gjson.ParseBytes(data)
 	}
 
@@ -80,7 +80,7 @@ func Get(data []byte, path ...string) gjson.Result {
 // GetFromString get value from JSON string by path.
 // https://pkg.go.dev/github.com/tidwall/gjson?tab=doc#Get
 func GetFromString(str string, path ...string) gjson.Result {
-	if len(path) == 0 {
+	if len(path) == 0 || len(path[0]) == 0 {
 		return gjson.Parse(str)
 	}
 
