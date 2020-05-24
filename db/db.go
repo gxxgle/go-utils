@@ -62,7 +62,7 @@ func Transaction(s *xorm.Session, fn func(*xorm.Session) (error, error)) (dbErr,
 	dbErr, retErr = fn(s)
 	if retErr != nil {
 		if err := s.Rollback(); err != nil {
-			log.Errorw("go-utils db transaction rollback error", "err", err)
+			log.L.WithError(err).Error("go-utils db transaction rollback")
 		}
 
 		return

@@ -94,6 +94,6 @@ func (c *RedisCacher) HGet(key, field string, value interface{}) error {
 
 func (c *RedisCacher) Close() {
 	if err := c.Client.Close(); err != nil {
-		log.L.WithError(err).Error("redis close")
+		log.L.WithError(err).Error("go-utils redis close")
 	}
 }

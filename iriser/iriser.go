@@ -11,6 +11,7 @@ import (
 )
 
 func Register(r router.Party, h interface{}) {
+	prefix := r.GetRelPath()
 	hValue := reflect.ValueOf(h)
 	for i := 0; i < hValue.NumMethod(); i++ {
 		mValue := hValue.Method(i)
@@ -31,7 +32,7 @@ func Register(r router.Party, h interface{}) {
 			mValue.Call([]reflect.Value{reflect.ValueOf(ctx)})
 		})
 
-		log.L.WithField("method", mType.Name).Debug("register handler")
+		log.L.WithField("path", prefix+"/"+mType.Name).Debug("register handler")
 	}
 }
 
@@ -39,8 +40,9 @@ func NewLogger() iris.Handler {
 	cfg := logger.DefaultConfig()
 	cfg.LogFuncCtx = func(ctx iris.Context, latency time.Duration) {
 		log.L.WithFields(log.F{
-			"latency_ms": latency.Milliseconds(),
+			"method":     ctx.Method(),
 			"path":       ctx.Path(),
+			"latency_ms": latency.Milliseconds(),
 		}).Info("api request")
 	}
 	return logger.New(cfg)
