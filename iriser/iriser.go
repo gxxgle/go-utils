@@ -39,11 +39,15 @@ func Register(r router.Party, h interface{}) {
 func NewLogger() iris.Handler {
 	cfg := logger.DefaultConfig()
 	cfg.LogFuncCtx = func(ctx iris.Context, latency time.Duration) {
-		log.L.WithFields(log.F{
+		fields := log.F{
 			"method":     ctx.Method(),
 			"path":       ctx.Path(),
 			"latency_ms": latency.Milliseconds(),
-		}).Info("api request")
+		}
+		if userID := ctx.Values().Get("user_id"); userID != nil {
+			fields["user_id"] = userID
+		}
+		log.L.WithFields(fields).Info("api request")
 	}
 	return logger.New(cfg)
 }
