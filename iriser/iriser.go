@@ -47,6 +47,9 @@ func NewLogger() iris.Handler {
 		if userID := ctx.Values().Get("user_id"); userID != nil {
 			fields["user_id"] = userID
 		}
+		if err := ctx.Values().Get("err"); err != nil {
+			fields["err"] = err
+		}
 		log.L.WithFields(fields).Info("api request")
 	}
 	return logger.New(cfg)
