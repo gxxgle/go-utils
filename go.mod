@@ -44,5 +44,6 @@ require (
 	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc // indirect
 	golang.org/x/net v0.0.0-20200425230154-ff2c4b7c35a0
 	gopkg.in/yaml.v2 v2.2.8 // indirect
+	xorm.io/builder v0.3.7
 	xorm.io/xorm v1.0.1
 )

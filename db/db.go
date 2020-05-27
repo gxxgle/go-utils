@@ -1,12 +1,14 @@
 package db
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gxxgle/go-utils/env"
 	"github.com/gxxgle/go-utils/log"
+	"xorm.io/builder"
 	"xorm.io/xorm"
 )
 
@@ -15,6 +17,7 @@ var (
 	DefaultRetries    = 5
 	DefaullRetrySleep = time.Second
 	DefaultNeedRetry  = isDeadlock
+	Builder           func() *builder.Builder
 )
 
 // Config for db
@@ -27,7 +30,16 @@ type Config struct {
 
 func OpenDB(cfg *Config) (*xorm.Engine, error) {
 	if cfg.Driver == "" {
-		cfg.Driver = "mysql"
+		cfg.Driver = builder.MYSQL
+	}
+
+	switch cfg.Driver {
+	case builder.MYSQL:
+		Builder = builder.MySQL
+	// case builder.POSTGRES:
+	// 	Builder = builder.Postgres
+	default:
+		return nil, fmt.Errorf("db driver: %s not support", cfg.Driver)
 	}
 
 	db, err := xorm.NewEngine(cfg.Driver, cfg.URL)
@@ -73,29 +85,29 @@ func Transaction(s *xorm.Session, fn func(*xorm.Session) (error, error)) (dbErr,
 }
 
 // TransactionWithRetry fn return db error and export error
-func TransactionWithRetry(s *xorm.Session, fn func(*xorm.Session) (error, error),
-	needRetry func(error) bool) (dbErr, retErr error) {
-	if needRetry == nil {
-		needRetry = DefaultNeedRetry
-	}
+// func TransactionWithRetry(s *xorm.Session, fn func(*xorm.Session) (error, error),
+// 	needRetry func(error) bool) (dbErr, retErr error) {
+// 	if needRetry == nil {
+// 		needRetry = DefaultNeedRetry
+// 	}
 
-	for i := 0; i < DefaultRetries; i++ {
-		dbErr, retErr = Transaction(s.Clone(), fn)
-		if dbErr == nil {
-			break
-		}
+// 	for i := 0; i < DefaultRetries; i++ {
+// 		dbErr, retErr = Transaction(s.Clone(), fn)
+// 		if dbErr == nil {
+// 			break
+// 		}
 
-		if !needRetry(dbErr) {
-			break
-		}
+// 		if !needRetry(dbErr) {
+// 			break
+// 		}
 
-		if i < DefaultRetries-1 {
-			time.Sleep(DefaullRetrySleep * time.Duration(i+1))
-		}
-	}
+// 		if i < DefaultRetries-1 {
+// 			time.Sleep(DefaullRetrySleep * time.Duration(i+1))
+// 		}
+// 	}
 
-	return dbErr, retErr
-}
+// 	return dbErr, retErr
+// }
 
 func isDeadlock(err error) bool {
 	if err == nil {
