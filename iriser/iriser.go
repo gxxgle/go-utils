@@ -2,6 +2,7 @@ package iriser
 
 import (
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/gxxgle/go-utils/log"
@@ -44,12 +45,11 @@ func NewLogger() iris.Handler {
 			"path":       ctx.Path(),
 			"latency_ms": latency.Milliseconds(),
 		}
-		if userID := ctx.Values().Get("user_id"); userID != nil {
-			fields["user_id"] = userID
-		}
-		if err := ctx.Values().Get("err"); err != nil {
-			fields["err"] = err
-		}
+		ctx.Values().Visit(func(key string, value interface{}) {
+			if strings.HasPrefix(key, "log.") {
+				fields[strings.TrimPrefix(key, "log.")] = value
+			}
+		})
 		log.L.WithFields(fields).Info("api request")
 	}
 	return logger.New(cfg)
