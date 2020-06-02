@@ -30,7 +30,7 @@ func init() {
 			logrus.FieldKeyMsg:   "msg",
 		},
 		CallerPrettyfier: func(rf *runtime.Frame) (string, string) {
-			file := fmt.Sprintf(":L%d", rf.Line)
+			file := fmt.Sprintf(":%d", rf.Line)
 			files := strings.Split(rf.File, "/")
 			if len(files) > 0 {
 				file = files[len(files)-1] + file
