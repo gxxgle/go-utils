@@ -3,7 +3,6 @@ package cache
 import (
 	"time"
 
-	"github.com/go-redis/redis/v7"
 	"github.com/gxxgle/go-utils/json"
 	"github.com/patrickmn/go-cache"
 )
@@ -37,13 +36,13 @@ func (c *MemoryCacher) Set(key string, value interface{}, expiration time.Durati
 func (c *MemoryCacher) Get(key string, value interface{}) error {
 	v, ok := c.Client.Get(key)
 	if !ok {
-		return redis.Nil
+		return ErrNil
 	}
 
 	bs, ok := v.([]byte)
 	if !ok {
 		c.Client.Delete(key)
-		return redis.Nil
+		return ErrNil
 	}
 
 	return json.Unmarshal(bs, value)

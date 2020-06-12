@@ -2,9 +2,12 @@ package cache
 
 import (
 	"time"
+
+	"github.com/go-redis/redis/v7"
 )
 
 var (
+	ErrNil        = redis.Nil
 	DefaultCacher = NewMemoryCacher()
 )
 
