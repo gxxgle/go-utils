@@ -3,17 +3,16 @@ module github.com/gxxgle/go-utils
 go 1.13
 
 require (
-	cloud.google.com/go v0.45.1 // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/assembla/cony v0.3.2
 	github.com/bsm/redislock v0.5.0
+	github.com/doug-martin/goqu/v9 v9.9.0
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-redis/redis/v7 v7.2.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/go-cmp v0.4.0 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/imroc/req v0.3.0

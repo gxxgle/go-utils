@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/doug-martin/goqu/v9"
+	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gxxgle/go-utils/env"
 	"github.com/gxxgle/go-utils/log"
@@ -18,6 +20,7 @@ var (
 	DefaullRetrySleep = time.Second
 	DefaultNeedRetry  = isDeadlock
 	Builder           func() *builder.Builder
+	Goqu              goqu.DialectWrapper
 )
 
 // Config for db
@@ -36,6 +39,7 @@ func OpenDB(cfg *Config) (*xorm.Engine, error) {
 	switch cfg.Driver {
 	case builder.MYSQL:
 		Builder = builder.MySQL
+		Goqu = goqu.Dialect(builder.MYSQL)
 	// case builder.POSTGRES:
 	// 	Builder = builder.Postgres
 	default:
