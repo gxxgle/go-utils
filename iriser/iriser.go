@@ -37,10 +37,13 @@ func Register(r router.Party, h interface{}) {
 	}
 }
 
-func NewLogger() iris.Handler {
+func NewLogger(ignore func(method, path string) bool) iris.Handler {
 	cfg := logger.DefaultConfig()
 	cfg.LogFuncCtx = func(ctx iris.Context, latency time.Duration) {
 		if ctx.Method() == iris.MethodOptions {
+			return
+		}
+		if ignore != nil && ignore(ctx.Method(), ctx.Path()) {
 			return
 		}
 		fields := log.F{
