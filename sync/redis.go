@@ -67,12 +67,12 @@ func (m *redisMutex) Lock() {
 			return
 		}
 
-		log.Errorw("go-utils redislock lock error", "key", m.key, "err", err)
+		log.L.WithError(err).WithField("key", m.key).Error("go-utils redislock lock error")
 	}
 }
 
 func (m *redisMutex) Unlock() {
 	if err := m.lock.Release(); err != nil {
-		log.Errorw("go-utils redislock unlock error", "key", m.key, "err", err)
+		log.L.WithError(err).WithField("key", m.key).Error("go-utils redislock unlock error")
 	}
 }

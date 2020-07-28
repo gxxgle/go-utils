@@ -13,7 +13,7 @@ type person struct {
 
 func main() {
 	c, err := cache.NewRedisCacher(&cache.RedisConfig{
-		URL:      "172.18.130.38:16379",
+		URL:      "192.168.31.61:6379",
 		Password: "KgqvdOdYV5",
 		Retries:  10,
 	})

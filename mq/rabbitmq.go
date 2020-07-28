@@ -65,7 +65,7 @@ func (c *rabbitmq) run() {
 			select {
 			case err := <-c.Errors():
 				if err != nil {
-					log.Errorw("go-utils mq rabbitmq client error", "err", err)
+					log.L.WithError(err).Error("go-utils mq rabbitmq client run")
 				}
 
 			case <-c.exit:
@@ -92,8 +92,11 @@ func newRabbitmqPublisher(cli *rabbitmq, exchange string) *rabbitmqPublisher {
 func (p *rabbitmqPublisher) send(msg *Message) {
 	err := p.puber.PublishWithRoutingKey(amqp.Publishing{Body: msg.Body}, msg.Key)
 	if err != nil {
-		log.Errorw("go-utils mq rabbitmq publisher send message error", "exchange",
-			p.exchange, "key", msg.Key, "body", string(msg.Body))
+		log.L.WithError(err).WithFields(log.F{
+			"exchange": p.exchange,
+			"key":      msg.Key,
+			"body":     string(msg.Body),
+		}).Error("go-utils mq rabbitmq publisher send message")
 	}
 }
 
@@ -112,7 +115,7 @@ func (p *rabbitmqPublisher) run() {
 
 		close(p.msgs)
 		p.cli.wg.Done()
-		log.Infow("go-utils mq rabbitmq publisher stopped", "exchange", p.exchange)
+		log.L.WithField("exchange", p.exchange).Info("go-utils mq rabbitmq publisher stopped")
 	}()
 }
 
@@ -144,15 +147,17 @@ func (s *rabbitmqSubscriber) Subscribe(handler func([]byte) error) {
 			select {
 			case msg := <-s.coner.Deliveries():
 				if err := handler(msg.Body); err != nil {
-					log.Errorw("go-utils mq rabbitmq subscriber handler message error",
-						"queue", s.queue, "body", string(msg.Body), "err", err)
+					log.L.WithError(err).WithFields(log.F{
+						"queue": s.queue,
+						"body":  string(msg.Body),
+					}).Error("go-utils mq rabbitmq subscriber handler message")
 					continue
 				}
 				msg.Ack(false)
 
 			case err := <-s.coner.Errors():
 				if err != nil {
-					log.Errorw("go-utils mq rabbitmq subscriber error", "queue", s.queue, "err", err)
+					log.L.WithError(err).WithField("queue", s.queue).Error("go-utils mq rabbitmq subscriber")
 				}
 
 			case <-s.cli.exit:
@@ -160,6 +165,6 @@ func (s *rabbitmqSubscriber) Subscribe(handler func([]byte) error) {
 		}
 
 		s.cli.wg.Done()
-		log.Infow("go-utils mq rabbitmq subscriber stopped", "queue", s.queue)
+		log.L.WithField("queue", s.queue).Info("go-utils mq rabbitmq subscriber stopped")
 	}()
 }

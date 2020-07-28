@@ -44,7 +44,7 @@ func GetErrorCode(err error) int32 {
 func addError(err *Error) *Error {
 	e, ok := allErrors[err.Code]
 	if ok {
-		log.Fatalw("duplate error code", "exists_err", e, "new_err", err)
+		log.L.WithFields(log.F{"exists_err": e, "new_err": err}).Fatal("duplate error code")
 	}
 
 	allErrors[err.Code] = err
