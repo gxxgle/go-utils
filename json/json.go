@@ -3,7 +3,7 @@ package json
 import (
 	stdjson "encoding/json"
 
-	"github.com/json-iterator/go"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/tidwall/gjson"
 )
 

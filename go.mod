@@ -20,7 +20,8 @@ require (
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/klauspost/compress v1.10.10 // indirect
-	github.com/kr/pretty v0.2.0 // indirect
+	github.com/kr/pretty v0.2.1 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -45,6 +46,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 // indirect
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	gopkg.in/yaml.v2 v2.3.0 // indirect
-	xorm.io/builder v0.3.7
 	xorm.io/xorm v1.0.3
 )

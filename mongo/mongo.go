@@ -66,7 +66,7 @@ func (s *Session) C(table interface{}) *mgo.Collection {
 
 // Insert inserts one or more documents in the respective collection
 func (s *Session) Insert(docs ...interface{}) error {
-	if len(docs) <= 0 {
+	if len(docs) == 0 {
 		return nil
 	}
 

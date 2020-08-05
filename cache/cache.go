@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	ErrNil        = redis.Nil
+	ErrNil        = redis.Nil // error not found
 	DefaultCacher = NewMemoryCacher()
 )
 

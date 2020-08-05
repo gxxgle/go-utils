@@ -1,9 +1,10 @@
 package sync
 
 import (
-	"github.com/bsm/redislock"
 	"github.com/gxxgle/go-utils/cache"
 	"github.com/gxxgle/go-utils/log"
+
+	"github.com/bsm/redislock"
 )
 
 type redisMutexer struct {

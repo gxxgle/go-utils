@@ -3,8 +3,9 @@ package mq
 import (
 	"sync"
 
-	"github.com/assembla/cony"
 	"github.com/gxxgle/go-utils/log"
+
+	"github.com/assembla/cony"
 	"github.com/streadway/amqp"
 )
 
@@ -34,7 +35,7 @@ func NewRabbitMQ(url string) Client {
 			cony.URL(url),
 			cony.Backoff(cony.DefaultBackoff),
 		),
-		exit: make(chan bool, 0),
+		exit: make(chan bool),
 	}
 
 	out.run()
@@ -81,7 +82,7 @@ func newRabbitmqPublisher(cli *rabbitmq, exchange string) *rabbitmqPublisher {
 		cli:      cli,
 		puber:    cony.NewPublisher(exchange, ""),
 		exchange: exchange,
-		msgs:     make(chan *Message, 0),
+		msgs:     make(chan *Message),
 	}
 
 	out.run()
@@ -153,7 +154,7 @@ func (s *rabbitmqSubscriber) Subscribe(handler func([]byte) error) {
 					}).Error("go-utils mq rabbitmq subscriber handler message")
 					continue
 				}
-				msg.Ack(false)
+				log.LogIfError(msg.Ack(false))
 
 			case err := <-s.coner.Errors():
 				if err != nil {

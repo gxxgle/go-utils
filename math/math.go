@@ -53,6 +53,6 @@ func FloatToInt(f float64, precision int32) int {
 func FloatFromInt(i int, precision int32) float64 {
 	dMulti := decimal.NewFromFloat(math.Pow10(int(precision)))
 	dI := decimal.NewFromFloat(float64(i))
-	out, _ := dI.Div(dMulti).Round(int32(precision)).Float64()
+	out, _ := dI.Div(dMulti).Round(precision).Float64()
 	return out
 }

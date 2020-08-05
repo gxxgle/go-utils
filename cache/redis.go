@@ -3,9 +3,10 @@ package cache
 import (
 	"time"
 
-	"github.com/go-redis/redis/v7"
 	"github.com/gxxgle/go-utils/json"
 	"github.com/gxxgle/go-utils/log"
+
+	"github.com/go-redis/redis/v7"
 )
 
 // RedisConfig is config struct of redis.

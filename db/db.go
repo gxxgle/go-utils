@@ -5,13 +5,19 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gxxgle/go-utils/env"
+	"github.com/gxxgle/go-utils/log"
+
 	"github.com/doug-martin/goqu/v9"
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gxxgle/go-utils/env"
-	"github.com/gxxgle/go-utils/log"
-	"xorm.io/builder"
 	"xorm.io/xorm"
+)
+
+type Driver = string
+
+const (
+	MySQL Driver = "mysql"
 )
 
 // default config
@@ -19,29 +25,28 @@ var (
 	DefaultRetries    = 5
 	DefaullRetrySleep = time.Second
 	DefaultNeedRetry  = isDeadlock
-	Builder           func() *builder.Builder
-	Goqu              goqu.DialectWrapper
+)
+
+var (
+	Goqu goqu.DialectWrapper
 )
 
 // Config for db
 type Config struct {
-	Driver   string `json:"driver"`
-	URL      string `json:"url"`
+	Driver   Driver `json:"driver"`
+	URL      string `json:"url"` // example: "root:PASSWORD@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&clientFoundRows=true&parseTime=true&loc=Asia%2FShanghai"
 	PoolSize int    `json:"pool_size"`
 	Debug    bool   `json:"debug"`
 }
 
 func OpenDB(cfg *Config) (*xorm.Engine, error) {
 	if cfg.Driver == "" {
-		cfg.Driver = builder.MYSQL
+		cfg.Driver = MySQL
 	}
 
 	switch cfg.Driver {
-	case builder.MYSQL:
-		Builder = builder.MySQL
-		Goqu = goqu.Dialect(builder.MYSQL)
-	// case builder.POSTGRES:
-	// 	Builder = builder.Postgres
+	case MySQL:
+		Goqu = goqu.Dialect(MySQL)
 	default:
 		return nil, fmt.Errorf("db driver: %s not support", cfg.Driver)
 	}
@@ -53,9 +58,12 @@ func OpenDB(cfg *Config) (*xorm.Engine, error) {
 
 	db.DatabaseTZ = env.Local
 	db.ShowSQL(cfg.Debug)
-	db.SetMaxOpenConns(cfg.PoolSize)
-	db.SetMaxIdleConns(cfg.PoolSize)
 	db.SetConnMaxLifetime(time.Minute * 30)
+
+	if cfg.PoolSize > 0 {
+		db.SetMaxOpenConns(cfg.PoolSize)
+		db.SetMaxIdleConns(cfg.PoolSize)
+	}
 
 	if err := db.Ping(); err != nil {
 		return nil, err

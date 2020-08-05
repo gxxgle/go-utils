@@ -13,7 +13,7 @@ func Log(args ...float64) float64 {
 		step    = float64(1)
 	)
 
-	if len(args) <= 0 {
+	if len(args) == 0 {
 		return 0
 	}
 

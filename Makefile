@@ -1,4 +1,9 @@
-.PHONY: lint
+ALL: lint run
 
+.PHONY: lint
 lint:
-	gometalinter ./...
+	golangci-lint run
+
+.PHONY: run
+run:
+	go run example/main.go

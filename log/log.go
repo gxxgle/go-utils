@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gxxgle/go-utils/path"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -81,6 +82,14 @@ func File(logpaths ...string) {
 func Debug() {
 	logrus.SetReportCaller(true)
 	logrus.SetLevel(logrus.DebugLevel)
+}
+
+func LogIfError(err error, msg ...interface{}) {
+	if err == nil {
+		return
+	}
+
+	L.WithError(err).Error(msg...)
 }
 
 func Close() {
