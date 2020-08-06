@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/gxxgle/go-utils/log"
 )
 
@@ -14,14 +16,22 @@ func (p *person) String() string {
 }
 
 func main() {
-	log.File()
+	log.TextFormat()
+	// log.File()
 	log.Debug()
-	log.L.WithFields(log.F{
+	fields := log.F{
 		"c":       "c",
 		"z":       "z",
 		"a":       "a",
 		"b":       "b",
 		"t":       "t",
 		"persion": &person{},
-	}).Debug("test")
+	}
+	log.L.WithFields(fields).Debug("test debug")
+	time.Sleep(time.Millisecond * 347)
+	log.L.WithFields(fields).Info("test info")
+	time.Sleep(time.Millisecond * 347)
+	log.L.WithFields(fields).Warn("test warn")
+	time.Sleep(time.Millisecond * 347)
+	log.L.WithFields(fields).Error("test error")
 }

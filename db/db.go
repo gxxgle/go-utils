@@ -24,7 +24,7 @@ const (
 var (
 	DefaultRetries    = 5
 	DefaullRetrySleep = time.Second
-	DefaultNeedRetry  = isDeadlock
+	DefaultNeedRetry  = IsDeadlockErr
 )
 
 var (
@@ -70,6 +70,15 @@ func OpenDB(cfg *Config) (*xorm.Engine, error) {
 	}
 
 	return db, err
+}
+
+func ExecSQL(session *xorm.Session, sql string) (int64, error) {
+	rst, err := session.Exec(sql)
+	if err != nil {
+		return 0, err
+	}
+
+	return rst.RowsAffected()
 }
 
 // Transaction for db
@@ -121,10 +130,18 @@ func Transaction(s *xorm.Session, fn func(*xorm.Session) (error, error)) (dbErr,
 // 	return dbErr, retErr
 // }
 
-func isDeadlock(err error) bool {
+func IsDeadlockErr(err error) bool {
 	if err == nil {
 		return false
 	}
 
 	return strings.Contains(err.Error(), "Error 1213: Deadlock found")
+}
+
+func IsDuplicateEntryErr(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	return strings.Contains(err.Error(), "Error 1062: Duplicate entry")
 }

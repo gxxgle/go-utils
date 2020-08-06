@@ -18,10 +18,23 @@ type (
 
 var (
 	logfile *os.File
+	Logger  = logrus.StandardLogger()
 	L       = logrus.WithField("@pid", os.Getpid())
 )
 
 func init() {
+	JSONFormat()
+}
+
+func TextFormat() {
+	logrus.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp:    true,
+		TimestampFormat:  "2006-01-02T15:04:05.000",
+		CallerPrettyfier: callerPrettyfier,
+	})
+}
+
+func JSONFormat() {
 	logrus.SetFormatter(&logrus.JSONFormatter{
 		FieldMap: logrus.FieldMap{
 			logrus.FieldKeyTime:  "@time",
@@ -30,26 +43,28 @@ func init() {
 			logrus.FieldKeyFile:  "@file",
 			logrus.FieldKeyMsg:   "msg",
 		},
-		CallerPrettyfier: func(rf *runtime.Frame) (string, string) {
-			file := fmt.Sprintf(":%d", rf.Line)
-			files := strings.Split(rf.File, "/")
-			if len(files) > 0 {
-				file = files[len(files)-1] + file
-			}
-			if len(files) > 1 {
-				file = files[len(files)-2] + "/" + file
-			}
-			function := ""
-			functions := strings.Split(rf.Function, "/")
-			if len(functions) > 0 {
-				function = functions[len(functions)-1] + function
-			}
-			if len(functions) > 1 {
-				function = functions[len(functions)-2] + "/" + function
-			}
-			return function, file
-		},
+		CallerPrettyfier: callerPrettyfier,
 	})
+}
+
+func callerPrettyfier(rf *runtime.Frame) (string, string) {
+	file := fmt.Sprintf(":%d", rf.Line)
+	files := strings.Split(rf.File, "/")
+	if len(files) > 0 {
+		file = files[len(files)-1] + file
+	}
+	if len(files) > 1 {
+		file = files[len(files)-2] + "/" + file
+	}
+	function := ""
+	// functions := strings.Split(rf.Function, "/")
+	// if len(functions) > 0 {
+	// 	function = functions[len(functions)-1] + function
+	// }
+	// if len(functions) > 1 {
+	// 	function = functions[len(functions)-2] + "/" + function
+	// }
+	return function, file
 }
 
 func File(logpaths ...string) {
@@ -90,6 +105,14 @@ func LogIfError(err error, msg ...interface{}) {
 	}
 
 	L.WithError(err).Error(msg...)
+}
+
+func FatalIfError(err error, msg ...interface{}) {
+	if err == nil {
+		return
+	}
+
+	L.WithError(err).Fatal(msg...)
 }
 
 func Close() {
