@@ -5,11 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gxxgle/go-utils/log"
-
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/core/router"
 	"github.com/kataras/iris/v12/middleware/logger"
+	"github.com/phuslu/log"
 )
 
 func Register(r router.Party, h interface{}) {
@@ -34,7 +33,7 @@ func Register(r router.Party, h interface{}) {
 			mValue.Call([]reflect.Value{reflect.ValueOf(ctx)})
 		})
 
-		log.L.WithField("path", prefix+"/"+mType.Name).Debug("register handler")
+		log.Debug().Str("path", prefix+"/"+mType.Name).Msg("go-utils iris register handler")
 	}
 }
 
@@ -47,17 +46,18 @@ func NewLogger(ignore func(method, path string) bool) iris.Handler {
 		if ignore != nil && ignore(ctx.Method(), ctx.Path()) {
 			return
 		}
-		fields := log.F{
-			"method":     ctx.Method(),
-			"path":       ctx.Path(),
-			"latency_ms": latency.Milliseconds(),
-		}
+
+		lctx := log.NewContext(nil).
+			Str("method", ctx.Method()).
+			Str("path", ctx.Path()).
+			Int64("latency_ms", latency.Milliseconds())
 		ctx.Values().Visit(func(key string, value interface{}) {
 			if strings.HasPrefix(key, "log.") {
-				fields[strings.TrimPrefix(key, "log.")] = value
+				lctx.Interface(strings.TrimPrefix(key, "log."), value)
 			}
 		})
-		log.L.WithFields(fields).Info("api request")
+
+		log.Info().Context(lctx.Value()).Msg("api request")
 	}
 	return logger.New(cfg)
 }

@@ -4,67 +4,27 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
-	"strings"
 
 	"github.com/gxxgle/go-utils/path"
 
-	"github.com/sirupsen/logrus"
-)
-
-type (
-	F = logrus.Fields
+	"github.com/phuslu/log"
 )
 
 var (
-	logfile *os.File
-	Logger  = logrus.StandardLogger()
-	L       = logrus.WithField("@pid", os.Getpid())
+	fileWriter *log.FileWriter
 )
 
 func init() {
-	JSONFormat()
+	log.DefaultLogger.Level = log.InfoLevel
+	log.DefaultLogger.Caller = 1
 }
 
-func TextFormat() {
-	logrus.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp:    true,
-		TimestampFormat:  "2006-01-02T15:04:05.000",
-		CallerPrettyfier: callerPrettyfier,
-	})
-}
-
-func JSONFormat() {
-	logrus.SetFormatter(&logrus.JSONFormatter{
-		FieldMap: logrus.FieldMap{
-			logrus.FieldKeyTime:  "@time",
-			logrus.FieldKeyLevel: "@level",
-			logrus.FieldKeyFunc:  "@func",
-			logrus.FieldKeyFile:  "@file",
-			logrus.FieldKeyMsg:   "msg",
-		},
-		CallerPrettyfier: callerPrettyfier,
-	})
-}
-
-func callerPrettyfier(rf *runtime.Frame) (string, string) {
-	file := fmt.Sprintf(":%d", rf.Line)
-	files := strings.Split(rf.File, "/")
-	if len(files) > 0 {
-		file = files[len(files)-1] + file
+func ColorConsole() {
+	log.DefaultLogger.Writer = &log.ConsoleWriter{
+		ColorOutput:    true,
+		QuoteString:    false,
+		EndWithMessage: false,
 	}
-	if len(files) > 1 {
-		file = files[len(files)-2] + "/" + file
-	}
-	function := ""
-	// functions := strings.Split(rf.Function, "/")
-	// if len(functions) > 0 {
-	// 	function = functions[len(functions)-1] + function
-	// }
-	// if len(functions) > 1 {
-	// 	function = functions[len(functions)-2] + "/" + function
-	// }
-	return function, file
 }
 
 func File(logpaths ...string) {
@@ -81,43 +41,52 @@ func File(logpaths ...string) {
 
 	err := os.MkdirAll(filepath.Dir(logpath), os.ModePerm)
 	if err != nil {
-		L.WithField("path", logpath).WithError(err).Error("go-utils log mkdir failed")
+		log.Error().Err(err).Str("path", logpath).Msg("go-utils log mkdir failed")
 		return
 	}
 
-	logfile, err = os.OpenFile(logpath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		L.WithField("path", logpath).WithError(err).Error("go-utils log open file failed")
-		return
+	fileWriter = &log.FileWriter{
+		Filename:  logpath,
+		FileMode:  0600,
+		LocalTime: true,
 	}
-
-	logrus.SetOutput(logfile)
+	log.DefaultLogger.Writer = fileWriter
 }
 
-func Debug() {
-	logrus.SetReportCaller(true)
-	logrus.SetLevel(logrus.DebugLevel)
+func SetDebug() {
+	log.DefaultLogger.Level = log.DebugLevel
 }
 
-func LogIfError(err error, msg ...interface{}) {
+func LogIfError(err error, msgs ...string) {
 	if err == nil {
 		return
 	}
 
-	L.WithError(err).Error(msg...)
+	msg := ""
+	if len(msgs) > 0 {
+		msg = msgs[0]
+	}
+
+	log.Error().Caller(log.DefaultLogger.Caller + 1).Err(err).Msg(msg)
 }
 
-func FatalIfError(err error, msg ...interface{}) {
+func FatalIfError(err error, msgs ...string) {
 	if err == nil {
 		return
 	}
 
-	L.WithError(err).Fatal(msg...)
+	msg := ""
+	if len(msgs) > 0 {
+		msg = msgs[0]
+	}
+
+	log.Fatal().Caller(log.DefaultLogger.Caller + 1).Err(err).Msg(msg)
 }
 
-func Close() {
-	if logfile != nil {
-		logfile.Close()
-		logfile = nil
+func Close() error {
+	if fileWriter != nil {
+		return fileWriter.Close()
 	}
+
+	return nil
 }

@@ -3,9 +3,10 @@ package mq
 import (
 	"sync"
 
-	"github.com/gxxgle/go-utils/log"
+	ulog "github.com/gxxgle/go-utils/log"
 
 	"github.com/assembla/cony"
+	"github.com/phuslu/log"
 	"github.com/streadway/amqp"
 )
 
@@ -66,7 +67,7 @@ func (c *rabbitmq) run() {
 			select {
 			case err := <-c.Errors():
 				if err != nil {
-					log.L.WithError(err).Error("go-utils mq rabbitmq client run")
+					log.Error().Err(err).Msg("go-utils rabbitmq client run")
 				}
 
 			case <-c.exit:
@@ -93,11 +94,11 @@ func newRabbitmqPublisher(cli *rabbitmq, exchange string) *rabbitmqPublisher {
 func (p *rabbitmqPublisher) send(msg *Message) {
 	err := p.puber.PublishWithRoutingKey(amqp.Publishing{Body: msg.Body}, msg.Key)
 	if err != nil {
-		log.L.WithError(err).WithFields(log.F{
-			"exchange": p.exchange,
-			"key":      msg.Key,
-			"body":     string(msg.Body),
-		}).Error("go-utils mq rabbitmq publisher send message")
+		log.Error().
+			Str("exchange", p.exchange).
+			Str("key", msg.Key).
+			Str("body", string(msg.Body)).
+			Msg("go-utils rabbitmq publisher send message")
 	}
 }
 
@@ -116,7 +117,7 @@ func (p *rabbitmqPublisher) run() {
 
 		close(p.msgs)
 		p.cli.wg.Done()
-		log.L.WithField("exchange", p.exchange).Info("go-utils mq rabbitmq publisher stopped")
+		log.Info().Str("exchange", p.exchange).Msg("go-utils rabbitmq publisher stopped")
 	}()
 }
 
@@ -148,17 +149,18 @@ func (s *rabbitmqSubscriber) Subscribe(handler func([]byte) error) {
 			select {
 			case msg := <-s.coner.Deliveries():
 				if err := handler(msg.Body); err != nil {
-					log.L.WithError(err).WithFields(log.F{
-						"queue": s.queue,
-						"body":  string(msg.Body),
-					}).Error("go-utils mq rabbitmq subscriber handler message")
+					log.Error().
+						Err(err).
+						Str("queue", s.queue).
+						Str("body", string(msg.Body)).
+						Msg("go-utils rabbitmq subscriber handler message")
 					continue
 				}
-				log.LogIfError(msg.Ack(false))
+				ulog.LogIfError(msg.Ack(false))
 
 			case err := <-s.coner.Errors():
 				if err != nil {
-					log.L.WithError(err).WithField("queue", s.queue).Error("go-utils mq rabbitmq subscriber")
+					log.Error().Err(err).Str("queue", s.queue).Msg("go-utils rabbitmq subscriber")
 				}
 
 			case <-s.cli.exit:
@@ -166,6 +168,6 @@ func (s *rabbitmqSubscriber) Subscribe(handler func([]byte) error) {
 		}
 
 		s.cli.wg.Done()
-		log.L.WithField("queue", s.queue).Info("go-utils mq rabbitmq subscriber stopped")
+		log.Info().Str("queue", s.queue).Msg("go-utils rabbitmq subscriber stopped")
 	}()
 }

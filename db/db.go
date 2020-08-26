@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/gxxgle/go-utils/env"
-	"github.com/gxxgle/go-utils/log"
 
 	"github.com/doug-martin/goqu/v9"
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/phuslu/log"
 	"xorm.io/xorm"
 )
 
@@ -95,7 +95,7 @@ func Transaction(s *xorm.Session, fn func(*xorm.Session) (error, error)) (dbErr,
 	dbErr, retErr = fn(s)
 	if retErr != nil {
 		if err := s.Rollback(); err != nil {
-			log.L.WithError(err).Error("go-utils db transaction rollback")
+			log.Error().Err(err).Msg("go-utils db transaction rollback")
 		}
 
 		return

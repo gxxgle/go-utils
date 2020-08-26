@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gxxgle/go-utils/log"
+	"github.com/phuslu/log"
 )
 
 type TaskPool struct {
@@ -44,10 +44,10 @@ func (tp *TaskPool) Stop() {
 
 	start := time.Now()
 	defer func() {
-		log.L.WithFields(log.F{
-			"taskpool_name": tp.name,
-			"cost":          time.Since(start),
-		}).Info("go-utils stop taskpool")
+		log.Info().
+			Str("taskpool_name", tp.name).
+			Dur("cost", time.Since(start)).
+			Msg("go-utils stop taskpool")
 	}()
 
 	tp.stopped = true
@@ -67,7 +67,7 @@ func (tp *TaskPool) loopRun() {
 func (tp *TaskPool) run() {
 	defer func() {
 		if err := recover(); err != nil {
-			log.L.WithField("error", err).Error("go-utils task crash")
+			log.Error().Interface("error", err).Msg("go-utils task crash")
 		}
 	}()
 

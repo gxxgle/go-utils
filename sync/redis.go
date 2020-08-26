@@ -2,9 +2,9 @@ package sync
 
 import (
 	"github.com/gxxgle/go-utils/cache"
-	"github.com/gxxgle/go-utils/log"
 
 	"github.com/bsm/redislock"
+	"github.com/phuslu/log"
 )
 
 type redisMutexer struct {
@@ -68,12 +68,12 @@ func (m *redisMutex) Lock() {
 			return
 		}
 
-		log.L.WithError(err).WithField("key", m.key).Error("go-utils redislock lock error")
+		log.Error().Err(err).Str("key", m.key).Msg("go-utils redislock lock error")
 	}
 }
 
 func (m *redisMutex) Unlock() {
 	if err := m.lock.Release(); err != nil {
-		log.L.WithError(err).WithField("key", m.key).Error("go-utils redislock unlock error")
+		log.Error().Err(err).Str("key", m.key).Msg("go-utils redislock unlock error")
 	}
 }

@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/gxxgle/go-utils/json"
-	"github.com/gxxgle/go-utils/log"
 
 	"github.com/go-redis/redis/v7"
+	"github.com/phuslu/log"
 )
 
 // RedisConfig is config struct of redis.
@@ -95,6 +95,6 @@ func (c *RedisCacher) HGet(key, field string, value interface{}) error {
 
 func (c *RedisCacher) Close() {
 	if err := c.Client.Close(); err != nil {
-		log.L.WithError(err).Error("go-utils redis close")
+		log.Error().Err(err).Msg("go-utils redis close")
 	}
 }

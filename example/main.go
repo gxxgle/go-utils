@@ -5,7 +5,6 @@ import (
 	_ "github.com/gxxgle/go-utils/config"
 	_ "github.com/gxxgle/go-utils/db"
 	_ "github.com/gxxgle/go-utils/env"
-	_ "github.com/gxxgle/go-utils/errors"
 	_ "github.com/gxxgle/go-utils/ip"
 	_ "github.com/gxxgle/go-utils/iriser"
 	_ "github.com/gxxgle/go-utils/json"
