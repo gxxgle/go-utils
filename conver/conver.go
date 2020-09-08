@@ -108,7 +108,7 @@ func Float64(val interface{}) (float64, error) {
 		}
 		return 0, nil
 	default:
-		str := strings.Replace(strings.TrimSpace(StringMust(val)), " ", "", -1)
+		str := strings.ReplaceAll(strings.TrimSpace(StringMust(val)), " ", "")
 		return strconv.ParseFloat(str, 64)
 	}
 }
