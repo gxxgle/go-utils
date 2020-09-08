@@ -3,6 +3,7 @@ package main
 import (
 	_ "github.com/gxxgle/go-utils/cache"
 	_ "github.com/gxxgle/go-utils/config"
+	_ "github.com/gxxgle/go-utils/conver"
 	_ "github.com/gxxgle/go-utils/db"
 	_ "github.com/gxxgle/go-utils/env"
 	_ "github.com/gxxgle/go-utils/ip"
