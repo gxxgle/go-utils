@@ -7,9 +7,12 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// global variable
 var (
-	JSON = jsoniter.ConfigCompatibleWithStandardLibrary
+	JSON = jsoniter.Config{
+		EscapeHTML:             false,
+		SortMapKeys:            true,
+		ValidateJsonRawMessage: true,
+	}.Froze()
 )
 
 type RawMessage = stdjson.RawMessage
@@ -18,7 +21,7 @@ type RawMessage = stdjson.RawMessage
 func UseNumber() {
 	JSON = jsoniter.Config{
 		UseNumber:              true,
-		EscapeHTML:             true,
+		EscapeHTML:             false,
 		SortMapKeys:            true,
 		ValidateJsonRawMessage: true,
 	}.Froze()
