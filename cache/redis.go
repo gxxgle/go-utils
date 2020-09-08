@@ -11,10 +11,10 @@ import (
 
 // RedisConfig is config struct of redis.
 type RedisConfig struct {
-	URL      string `json:"url"`
-	Password string `json:"password"`
-	DB       int    `json:"db"`
-	Retries  int    `json:"retries"`
+	URL      string `json:"url" yaml:"url"`
+	Password string `json:"password" yaml:"password"`
+	DB       int    `json:"db" yaml:"db"`
+	Retries  int    `json:"retries" yaml:"retries"`
 }
 
 type RedisCacher struct {

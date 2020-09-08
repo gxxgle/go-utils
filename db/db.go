@@ -33,10 +33,10 @@ var (
 
 // Config for db
 type Config struct {
-	Driver   Driver `json:"driver"`
-	URL      string `json:"url"` // example: "root:PASSWORD@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&clientFoundRows=true&parseTime=true&loc=Asia%2FShanghai"
-	PoolSize int    `json:"pool_size"`
-	Debug    bool   `json:"debug"`
+	Driver   Driver `json:"driver" yaml:"driver"`
+	URL      string `json:"url" yaml:"url"` // example: "root:PASSWORD@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&clientFoundRows=true&parseTime=true&loc=Asia%2FShanghai"
+	PoolSize int    `json:"pool_size" yaml:"pool_size"`
+	Debug    bool   `json:"debug" yaml:"debug"`
 }
 
 func OpenDB(cfg *Config) (*xorm.Engine, error) {

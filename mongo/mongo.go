@@ -14,8 +14,8 @@ var (
 
 // Config is config struct of mongo.
 type Config struct {
-	URL      string `json:"url"`
-	PoolSize int    `json:"pool_size"`
+	URL      string `json:"url" yaml:"url"`
+	PoolSize int    `json:"pool_size" yaml:"pool_size"`
 }
 
 type collection interface {
