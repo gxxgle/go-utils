@@ -13,9 +13,9 @@ type person struct {
 
 func main() {
 	c, err := cache.NewRedisCacher(&cache.RedisConfig{
-		URL:      "192.168.31.61:6379",
-		Password: "KgqvdOdYV5",
-		Retries:  10,
+		Addr:       "192.168.31.61:6379",
+		Password:   "KgqvdOdYV5",
+		MaxRetries: 10,
 	})
 	if err != nil {
 		log.Fatalln(err)

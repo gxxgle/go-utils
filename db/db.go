@@ -14,10 +14,8 @@ import (
 	"xorm.io/xorm"
 )
 
-type Driver = string
-
 const (
-	MySQL Driver = "mysql"
+	MySQL = "mysql"
 )
 
 // default config
@@ -33,9 +31,9 @@ var (
 
 // Config for db
 type Config struct {
-	Driver   Driver `json:"driver" yaml:"driver"`
-	URL      string `json:"url" yaml:"url"` // example: "root:PASSWORD@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&clientFoundRows=true&parseTime=true&loc=Asia%2FShanghai"
-	PoolSize int    `json:"pool_size" yaml:"pool_size"`
+	Driver   string `json:"driver" yaml:"driver" validate:"default=mysql,oneof=mysql"`
+	URL      string `json:"url" yaml:"url" validate:"required"` // example: "root:PASSWORD@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&clientFoundRows=true&parseTime=true&loc=Asia%2FShanghai"
+	PoolSize int    `json:"pool_size" yaml:"pool_size" validate:"default=20"`
 	Debug    bool   `json:"debug" yaml:"debug"`
 }
 
@@ -95,7 +93,7 @@ func Transaction(s *xorm.Session, fn func(*xorm.Session) (error, error)) (dbErr,
 	dbErr, retErr = fn(s)
 	if retErr != nil {
 		if err := s.Rollback(); err != nil {
-			log.Error().Err(err).Msg("go-utils db transaction rollback")
+			log.Error().Err(err).Msg("db transaction rollback")
 		}
 
 		return

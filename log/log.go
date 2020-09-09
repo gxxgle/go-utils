@@ -41,7 +41,7 @@ func File(logpaths ...string) {
 
 	err := os.MkdirAll(filepath.Dir(logpath), os.ModePerm)
 	if err != nil {
-		log.Error().Err(err).Str("path", logpath).Msg("go-utils log mkdir failed")
+		log.Error().Err(err).Str("path", logpath).Msg("log mkdir failed")
 		return
 	}
 

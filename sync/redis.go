@@ -30,7 +30,7 @@ func InitRedis(cfg *cache.RedisConfig, opts ...Option) error {
 }
 
 func NewRedisMutexer(cfg *cache.RedisConfig, opts ...Option) (Mutexer, error) {
-	cfg.Retries = 0
+	cfg.MaxRetries = 0
 	cacher, err := cache.NewRedisCacher(cfg)
 	if err != nil {
 		return nil, err
@@ -68,12 +68,12 @@ func (m *redisMutex) Lock() {
 			return
 		}
 
-		log.Error().Err(err).Str("key", m.key).Msg("go-utils redislock lock error")
+		log.Error().Err(err).Str("key", m.key).Msg("redislock lock error")
 	}
 }
 
 func (m *redisMutex) Unlock() {
 	if err := m.lock.Release(); err != nil {
-		log.Error().Err(err).Str("key", m.key).Msg("go-utils redislock unlock error")
+		log.Error().Err(err).Str("key", m.key).Msg("redislock unlock error")
 	}
 }

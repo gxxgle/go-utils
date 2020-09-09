@@ -11,10 +11,11 @@ import (
 
 // RedisConfig is config struct of redis.
 type RedisConfig struct {
-	URL      string `json:"url" yaml:"url"`
-	Password string `json:"password" yaml:"password"`
-	DB       int    `json:"db" yaml:"db"`
-	Retries  int    `json:"retries" yaml:"retries"`
+	Network    string `json:"network" yaml:"network" validate:"default=tcp,oneof=tcp unix"`
+	Addr       string `json:"addr" yaml:"addr" validate:"required"`
+	Password   string `json:"password" yaml:"password"`
+	DB         int    `json:"db" yaml:"db"`
+	MaxRetries int    `json:"max_retries" yaml:"max_retries"`
 }
 
 type RedisCacher struct {
@@ -33,18 +34,17 @@ func InitRedis(cfg *RedisConfig) error {
 
 func NewRedisCacher(cfg *RedisConfig) (Cacher, error) {
 	cli := redis.NewClient(&redis.Options{
-		Addr:        cfg.URL,
-		Password:    cfg.Password,
-		DB:          cfg.DB,
-		DialTimeout: time.Second * 5,
+		Network:    cfg.Network,
+		Addr:       cfg.Addr,
+		Password:   cfg.Password,
+		DB:         cfg.DB,
+		MaxRetries: cfg.MaxRetries,
 	})
 
 	if err := cli.Ping().Err(); err != nil {
 		return nil, err
 	}
 
-	opt := cli.Options()
-	opt.MaxRetries = cfg.Retries
 	return &RedisCacher{cli}, nil
 }
 
@@ -95,6 +95,6 @@ func (c *RedisCacher) HGet(key, field string, value interface{}) error {
 
 func (c *RedisCacher) Close() {
 	if err := c.Client.Close(); err != nil {
-		log.Error().Err(err).Msg("go-utils redis close")
+		log.Error().Err(err).Msg("redis close")
 	}
 }

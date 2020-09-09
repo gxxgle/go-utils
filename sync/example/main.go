@@ -17,9 +17,9 @@ var (
 
 func init() {
 	ulog.LogIfError(sync.InitRedis(&cache.RedisConfig{
-		URL:      "devhost:6379",
-		Password: "KgqvdOdYV5",
-		Retries:  10,
+		Addr:       "devhost:6379",
+		Password:   "KgqvdOdYV5",
+		MaxRetries: 10,
 	}))
 }
 

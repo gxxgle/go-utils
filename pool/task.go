@@ -45,9 +45,9 @@ func (tp *TaskPool) Stop() {
 	start := time.Now()
 	defer func() {
 		log.Info().
-			Str("taskpool_name", tp.name).
+			Str("name", tp.name).
 			Dur("cost", time.Since(start)).
-			Msg("go-utils stop taskpool")
+			Msg("taskpool stop")
 	}()
 
 	tp.stopped = true
@@ -67,7 +67,7 @@ func (tp *TaskPool) loopRun() {
 func (tp *TaskPool) run() {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error().Interface("error", err).Msg("go-utils task crash")
+			log.Error().Interface("error", err).Msg("task crash")
 		}
 	}()
 

@@ -70,3 +70,34 @@ func TestExample(t *testing.T) {
 		log.Fatalln("TestExample my2 err:", err)
 	}
 }
+
+func TestDeep(t *testing.T) {
+	type Config struct {
+		Bind     string `validate:"default=0.0.0.0:0"`
+		IP       string `validate:"default=127.0.0.1,ip"`
+		PoolSize int    `validate:"default=50,gte=1,lte=200"`
+		Email    string `validate:"email"`
+		Username string `validate:"min=6,max=12"`
+		Gender   string `validate:"oneof=M FM"`
+	}
+
+	type myStruct struct {
+		Redis *Config `json:"redis" yaml:"redis" validate:"required"`
+	}
+
+	my1 := &myStruct{}
+	if err := V.Struct(my1); err == nil {
+		log.Fatalln("TestDeep my1 failed")
+	}
+
+	my2 := &myStruct{
+		Redis: &Config{
+			Email:    "admin@abc.xyz",
+			Username: "username",
+			Gender:   "FM",
+		},
+	}
+	if err := V.Struct(my2); err != nil {
+		log.Fatalln("TestDeep my2 err:", err)
+	}
+}
