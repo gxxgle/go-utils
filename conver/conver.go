@@ -19,7 +19,7 @@ func String(val interface{}) (string, error) {
 	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
 		return fmt.Sprintf("%d", result), nil
 	default:
-		return fmt.Sprintf("%+v", val), nil
+		return fmt.Sprintf("%#v", val), nil
 	}
 }
 
@@ -39,8 +39,10 @@ func Bool(val interface{}) (bool, error) {
 	switch result := val.(type) {
 	case bool:
 		return result, nil
-	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64:
-		return result != 0, nil
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
+		return Int64Must(val) != 0, nil
+	case float32, float64:
+		return Float64Must(val) != 0, nil
 	case []byte:
 		return stringToBool(string(result))
 	case string:
