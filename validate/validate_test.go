@@ -1,7 +1,6 @@
 package validate
 
 import (
-	"log"
 	"testing"
 )
 
@@ -42,7 +41,7 @@ func TestTagEmpty(t *testing.T) {
 
 	my := &myStruct{}
 	if err := V.Struct(my); err != nil {
-		log.Fatalln("TestTagEmpty failed")
+		t.Fatal("TestTagEmpty failed")
 	}
 }
 
@@ -58,7 +57,7 @@ func TestExample(t *testing.T) {
 
 	my1 := &myStruct{}
 	if err := V.Struct(my1); err == nil {
-		log.Fatalln("TestExample my1 failed")
+		t.Fatal("TestExample my1 failed")
 	}
 
 	my2 := &myStruct{
@@ -67,7 +66,7 @@ func TestExample(t *testing.T) {
 		Gender:   "FM",
 	}
 	if err := V.Struct(my2); err != nil {
-		log.Fatalln("TestExample my2 err:", err)
+		t.Fatal("TestExample my2 err:", err)
 	}
 }
 
@@ -87,7 +86,7 @@ func TestDeep(t *testing.T) {
 
 	my1 := &myStruct{}
 	if err := V.Struct(my1); err == nil {
-		log.Fatalln("TestDeep my1 failed")
+		t.Fatal("TestDeep my1 failed")
 	}
 
 	my2 := &myStruct{
@@ -98,6 +97,6 @@ func TestDeep(t *testing.T) {
 		},
 	}
 	if err := V.Struct(my2); err != nil {
-		log.Fatalln("TestDeep my2 err:", err)
+		t.Fatal("TestDeep my2 err:", err)
 	}
 }
