@@ -1,6 +1,7 @@
 package json
 
 import (
+	"bytes"
 	stdjson "encoding/json"
 
 	jsoniter "github.com/json-iterator/go"
@@ -13,6 +14,11 @@ var (
 		SortMapKeys:            true,
 		ValidateJsonRawMessage: true,
 	}.Froze()
+)
+
+var (
+	arrayPrefix  = []byte("[")
+	objectPrefix = []byte("{")
 )
 
 type RawMessage = stdjson.RawMessage
@@ -88,4 +94,41 @@ func GetFromString(str string, path ...string) gjson.Result {
 	}
 
 	return gjson.Get(str, path[0])
+}
+
+func Format(raw []byte) []byte {
+	raw = bytes.TrimSpace(raw)
+	if bytes.HasPrefix(raw, arrayPrefix) {
+		val := []interface{}{}
+		if err := Unmarshal(raw, &val); err != nil {
+			return raw
+		}
+
+		data, err := Marshal(val)
+		if err != nil {
+			return raw
+		}
+
+		return data
+	}
+
+	if bytes.HasPrefix(raw, objectPrefix) {
+		val := map[string]interface{}{}
+		if err := Unmarshal(raw, &val); err != nil {
+			return raw
+		}
+
+		data, err := Marshal(val)
+		if err != nil {
+			return raw
+		}
+
+		return data
+	}
+
+	return raw
+}
+
+func FormatFromString(raw string) string {
+	return string(Format([]byte(raw)))
 }
