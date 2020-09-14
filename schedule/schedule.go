@@ -3,9 +3,8 @@ package schedule
 import (
 	"log"
 	"sync"
-	"time"
 
-	"github.com/gxxgle/go-utils/env"
+	"github.com/gxxgle/go-utils/time"
 
 	"github.com/robfig/cron/v3"
 )
@@ -30,7 +29,7 @@ func init() {
 
 // New new cron
 func New() (*Schedule, error) {
-	c := cron.New(cron.WithLocation(env.Local))
+	c := cron.New(cron.WithLocation(time.Local))
 	s := &Schedule{
 		Cron:    c,
 		Stopped: false,

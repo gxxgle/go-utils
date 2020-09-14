@@ -15,7 +15,7 @@ var (
 )
 
 func init() {
-	log.DefaultLogger.Level = log.InfoLevel
+	log.DefaultLogger.SetLevel(log.InfoLevel)
 	log.DefaultLogger.Caller = 1
 }
 
@@ -53,8 +53,12 @@ func File(logpaths ...string) {
 	log.DefaultLogger.Writer = fileWriter
 }
 
+func SetLevel(lvl log.Level) {
+	log.DefaultLogger.SetLevel(lvl)
+}
+
 func SetDebug() {
-	log.DefaultLogger.Level = log.DebugLevel
+	SetLevel(log.DebugLevel)
 }
 
 func LogIfError(err error, msgs ...string) {
@@ -68,6 +72,10 @@ func LogIfError(err error, msgs ...string) {
 	}
 
 	log.Error().Caller(log.DefaultLogger.Caller + 1).Err(err).Msg(msg)
+}
+
+func LogIfFuncError(fn func() error, msgs ...string) {
+	LogIfError(fn(), msgs...)
 }
 
 func FatalIfError(err error, msgs ...string) {

@@ -1,11 +1,11 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 	"strings"
-	"time"
 
-	"github.com/gxxgle/go-utils/env"
+	"github.com/gxxgle/go-utils/time"
 
 	"github.com/doug-martin/goqu/v9"
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
@@ -16,6 +16,10 @@ import (
 
 const (
 	MySQL = "mysql"
+)
+
+var (
+	ErrNotFound = errors.New("record not found")
 )
 
 // default config
@@ -54,7 +58,7 @@ func OpenDB(cfg *Config) (*xorm.Engine, error) {
 		return nil, err
 	}
 
-	db.DatabaseTZ = env.Local
+	db.DatabaseTZ = time.Local
 	db.ShowSQL(cfg.Debug)
 	db.SetConnMaxLifetime(time.Minute * 30)
 
