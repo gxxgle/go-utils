@@ -16,5 +16,5 @@ require (
 	github.com/shopspring/decimal v1.2.0
 	github.com/tidwall/gjson v1.6.1
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73
-	xorm.io/xorm v1.0.4
+	xorm.io/xorm v1.0.5
 )
