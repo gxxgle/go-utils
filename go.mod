@@ -3,10 +3,10 @@ module github.com/gxxgle/go-utils
 go 1.13
 
 require (
-	github.com/bsm/redislock v0.5.0
+	github.com/bsm/redislock v0.6.0
 	github.com/doug-martin/goqu/v9 v9.10.0
 	github.com/go-playground/validator/v10 v10.3.0
-	github.com/go-redis/redis/v7 v7.4.0
+	github.com/go-redis/redis/v8 v8.2.2
 	github.com/go-resty/resty/v2 v2.3.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/json-iterator/go v1.1.10

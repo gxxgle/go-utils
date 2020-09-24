@@ -3,7 +3,7 @@ package cache
 import (
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 )
 
 var (

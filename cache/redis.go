@@ -1,12 +1,17 @@
 package cache
 
 import (
+	"context"
 	"time"
 
 	"github.com/gxxgle/go-utils/json"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 	"github.com/phuslu/log"
+)
+
+var (
+	ctx = context.Background()
 )
 
 // RedisConfig is config struct of redis.
@@ -41,7 +46,7 @@ func NewRedisCacher(cfg *RedisConfig) (Cacher, error) {
 		MaxRetries: cfg.MaxRetries,
 	})
 
-	if err := cli.Ping().Err(); err != nil {
+	if err := cli.Ping(ctx).Err(); err != nil {
 		return nil, err
 	}
 
@@ -55,12 +60,12 @@ func (c *RedisCacher) Set(key string, value interface{}, expiration time.Duratio
 		return err
 	}
 
-	return c.Client.Set(key, str, expiration).Err()
+	return c.Client.Set(ctx, key, str, expiration).Err()
 }
 
 // Get value unmarshal from json
 func (c *RedisCacher) Get(key string, value interface{}) error {
-	bs, err := c.Client.Get(key).Bytes()
+	bs, err := c.Client.Get(ctx, key).Bytes()
 	if err != nil {
 		return err
 	}
@@ -70,7 +75,7 @@ func (c *RedisCacher) Get(key string, value interface{}) error {
 
 // Delete cache by key
 func (c *RedisCacher) Delete(key ...string) error {
-	return c.Client.Del(key...).Err()
+	return c.Client.Del(ctx, key...).Err()
 }
 
 // HSet value to json
@@ -80,12 +85,12 @@ func (c *RedisCacher) HSet(key, field string, value interface{}) error {
 		return err
 	}
 
-	return c.Client.HSet(key, field, str).Err()
+	return c.Client.HSet(ctx, key, field, str).Err()
 }
 
 // HGet value from json
 func (c *RedisCacher) HGet(key, field string, value interface{}) error {
-	bs, err := c.Client.HGet(key, field).Bytes()
+	bs, err := c.Client.HGet(ctx, key, field).Bytes()
 	if err != nil {
 		return err
 	}
