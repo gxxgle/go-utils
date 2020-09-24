@@ -5,6 +5,7 @@ import (
 	_ "github.com/gxxgle/go-utils/config"
 	_ "github.com/gxxgle/go-utils/conver"
 	_ "github.com/gxxgle/go-utils/db"
+	_ "github.com/gxxgle/go-utils/fn"
 	_ "github.com/gxxgle/go-utils/http"
 	_ "github.com/gxxgle/go-utils/json"
 	_ "github.com/gxxgle/go-utils/log"
