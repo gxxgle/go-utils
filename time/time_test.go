@@ -8,7 +8,7 @@ import (
 )
 
 func TestJSON(t *testing.T) {
-	before := New(2008, M8, 8, 20, 8, 8, 8*1000*1000)
+	before := Date(2008, M8, 8, 20, 8, 8, 8*1000*1000)
 	str := json.MustMarshalToString(before)
 	after := Time{}
 

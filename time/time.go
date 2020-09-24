@@ -67,6 +67,10 @@ func (t Time) UnixMilli() int64 {
 	return t.Time().UnixNano() / int64(Millisecond)
 }
 
+func (t Time) Add(d Duration) Time {
+	return New(t.Time().Add(d))
+}
+
 func (t Time) String() string {
 	return t.Time().Format(ISO8601Milli)
 }
