@@ -2,17 +2,12 @@ package fn
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 )
-
-type stringErr string
-
-func (e stringErr) Error() string {
-	return string(e)
-}
 
 func TestTimeout(t *testing.T) {
 	genFunc := func(d time.Duration, err error) func() error {
@@ -35,12 +30,12 @@ func TestTimeout(t *testing.T) {
 			expected: nil,
 		},
 		{
-			input:    genFunc(time.Millisecond, stringErr("func err")),
+			input:    genFunc(time.Millisecond, errors.New("func err")),
 			timeout:  time.Millisecond * 2,
-			expected: stringErr("func err"),
+			expected: errors.New("func err"),
 		},
 		{
-			input:    genFunc(time.Millisecond*2, stringErr("func err")),
+			input:    genFunc(time.Millisecond*2, errors.New("func err")),
 			timeout:  time.Millisecond,
 			expected: context.DeadlineExceeded,
 		},
