@@ -5,9 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gxxgle/go-utils/flag"
 	"github.com/gxxgle/go-utils/path"
 
 	"github.com/phuslu/log"
+	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -17,6 +19,44 @@ var (
 func init() {
 	log.DefaultLogger.SetLevel(log.InfoLevel)
 	log.DefaultLogger.Caller = 1
+}
+
+func InitFromFlag() {
+	flag.Add(&cli.StringFlag{
+		Name:    "log_level",
+		Usage:   "set log level. (debug, info, error)",
+		EnvVars: []string{"LOG_LEVEL"},
+		Value:   "info",
+	}, func(ctx *cli.Context) error {
+		lvl := log.ParseLevel(ctx.String("log_level"))
+		if lvl >= log.TraceLevel && lvl <= log.PanicLevel {
+			log.DefaultLogger.SetLevel(lvl)
+		}
+		return nil
+	})
+
+	flag.Add(&cli.StringFlag{
+		Name:    "log_type",
+		Usage:   "set log type. (json, console, color_console)",
+		EnvVars: []string{"LOG_TYPE"},
+		Value:   "json",
+	}, func(ctx *cli.Context) error {
+		switch ctx.String("log_type") {
+		case "console":
+			Console()
+		case "color_console":
+			ColorConsole()
+		}
+		return nil
+	})
+}
+
+func Console() {
+	log.DefaultLogger.Writer = &log.ConsoleWriter{
+		ColorOutput:    false,
+		QuoteString:    false,
+		EndWithMessage: false,
+	}
 }
 
 func ColorConsole() {

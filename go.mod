@@ -16,6 +16,7 @@ require (
 	github.com/shopspring/decimal v1.2.0
 	github.com/stretchr/testify v1.6.1
 	github.com/tidwall/gjson v1.6.1
+	github.com/urfave/cli/v2 v2.2.0
 	golang.org/x/net v0.0.0-20200923182212-328152dc79b1
 	xorm.io/xorm v1.0.5
 )
