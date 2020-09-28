@@ -3,6 +3,7 @@ package flag
 import (
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/urfave/cli/v2"
 )
@@ -31,14 +32,14 @@ func action(ctx *cli.Context) error {
 	return nil
 }
 
-func Add(flag cli.Flag, fn cli.ActionFunc) {
+func Add(flag cli.Flag, acts ...cli.ActionFunc) {
 	app.Flags = append(app.Flags, flag)
-	if fn != nil {
-		actions = append(actions, fn)
-	}
+	actions = append(actions, acts...)
 }
 
 func Run() error {
 	app.Flags = append(app.Flags, cli.HelpFlag)
+	sort.Sort(cli.FlagsByName(app.Flags))
+	sort.Sort(cli.CommandsByName(app.Commands))
 	return app.Run(os.Args)
 }
